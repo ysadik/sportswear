@@ -1,0 +1,77 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap');
+
+:root {
+  --c-gray: #617d98;
+  --c-gray-2: #f1f5f8;
+  --c-primary: #023e8a;
+  --c-primary-2: #0077b6;
+  --c-primary-3: #0096c7;
+  --c-primary-4: #00b4d8;
+  --c-white: #fff;
+  --c-black: #000;
+  --c-red: #bb2525;
+  --f-body: 0.9375rem;
+  --max-width: 73.125rem;
+  --transition: all 0.3s linear;
+}
+
+*,
+::after,
+::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 100%;
+}
+
+body {
+  min-height: 100vh;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: var(--f-body);
+  line-height: 1.1;
+  color: var(--c-gray);
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+button {
+  border: none;
+  outline: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.section {
+  padding: 5rem 0;
+}
+
+.section-center {
+  width: 90vw;
+  margin: 0 auto;
+  max-width: var(--max-width);
+}
+
+.page-100 {
+  min-height: calc(100vh - 10rem);
+}
+
+.page {
+  min-height: calc(100vh - 10rem);
+}
