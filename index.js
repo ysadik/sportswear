@@ -3,7 +3,6 @@ require('express-async-errors')
 
 const express = require('express')
 const cookieParser = require('cookie-parser')
-const fileUpload = require('express-fileupload')
 const path = require('path')
 const cors = require('cors')
 
@@ -21,11 +20,6 @@ const app = express()
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors())
-app.use(
-  fileUpload({
-    useTempFiles: true,
-  })
-)
 
 app.use('/user', userRouter)
 app.use('/api', categoryRouter)

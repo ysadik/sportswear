@@ -1,9 +1,9 @@
 const express = require('express')
 const router = express.Router()
+const multer = require('multer')
 const cloudinary = require('cloudinary')
 const auth = require('../middleware/auth')
 const authAdmin = require('../middleware/authAdmin')
-const fs = require('fs')
 const { StatusCodes } = require('http-status-codes')
 
 cloudinary.config({
@@ -12,45 +12,46 @@ cloudinary.config({
   api_secret: process.env.CLOUD_API_SECRET,
 })
 
-const removeTmp = (path) => {
-  fs.unlink(path, (err) => {
-    if (err) throw err
-  })
+const storage = multer.memoryStorage()
+const upload = multer({ storage: storage })
+
+const removeTmp = (file) => {
+  if (file.buffer) {
+    file.buffer = null
+  }
 }
 
-router.post('/upload', auth, authAdmin, (req, res) => {
+router.post('/upload', auth, authAdmin, upload.single('file'), (req, res) => {
   try {
-    if (!req.files || Object.keys(req.files).length === 0) {
+    if (!req.file) {
       return res
         .status(StatusCodes.BAD_REQUEST)
         .json({ msg: 'No files uploaded.' })
     }
 
-    const file = req.files.file
+    const file = req.file
 
     if (file.size > 1024 * 1024) {
-      removeTmp(file.tempFilePath)
+      removeTmp(file)
       return res.status(StatusCodes.BAD_REQUEST).json({ msg: 'File too large' })
     }
 
     if (file.mimetype !== 'image/jpeg' && file.mimetype !== 'image/png') {
-      removeTmp(file.tempFilePath)
+      removeTmp(file)
       return res
         .status(StatusCodes.BAD_REQUEST)
         .json({ msg: 'Incorrect file format' })
     }
 
-    cloudinary.v2.uploader.upload(
-      file.tempFilePath,
-      { folder: 'sportswear' },
-      async (err, result) => {
+    cloudinary.v2.uploader
+      .upload_stream({ folder: 'sportswear' }, async (err, result) => {
         if (err) throw err
-        removeTmp(file.tempFilePath)
+        removeTmp(file)
         res
           .status(StatusCodes.OK)
           .json({ public_id: result.public_id, url: result.secure_url })
-      }
-    )
+      })
+      .end(file.buffer)
   } catch (err) {
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
