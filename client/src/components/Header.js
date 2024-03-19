@@ -3,7 +3,7 @@ import { styled } from 'styled-components'
 import { Link } from 'react-router-dom'
 import { FaShoppingCart } from 'react-icons/fa'
 import { FaBars } from 'react-icons/fa'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 
 const Header = () => {
@@ -13,11 +13,34 @@ const Header = () => {
   const [isAdmin] = state.userAPI.isAdmin
   const [cart] = state.userAPI.cart
 
-  const toggleMenu = () => {
+  // Ref for the sidebar menu
+  const sidebarRef = useRef(null)
+
+  useEffect(() => {
+    const closeMenu = (event) => {
+      // Close the menu if click occurs outside the menu
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        setSidebarOpen(false)
+      }
+    }
+
+    // Add event listener for clicks on the document body
+    document.body.addEventListener('click', closeMenu)
+
+    return () => {
+      // Cleanup event listener
+      document.body.removeEventListener('click', closeMenu)
+    }
+  }, [])
+
+  const toggleMenu = (event) => {
+    // Prevent event propagation to the document body
+    event.stopPropagation()
     setSidebarOpen(!sidebarOpen)
   }
 
   const logoutUser = async () => {
+    setSidebarOpen(false)
     await axios.get('/user/logout')
     localStorage.removeItem('firstLogin')
     window.location.href = '/'
@@ -27,9 +50,11 @@ const Header = () => {
     return (
       <>
         <li className="nav__link">
-          <Link to="/create_product">Create Product</Link>
+          <Link to="/create_product" onClick={() => setSidebarOpen(false)}>
+            Create Product
+          </Link>
         </li>
-        <li className="nav__link">
+        <li className="nav__link" onClick={() => setSidebarOpen(false)}>
           <Link to="/category">Categories</Link>
         </li>
       </>
@@ -54,18 +79,22 @@ const Header = () => {
         <h1>{isAdmin ? 'Admin' : 'SPORTSWEAR'}</h1>
       </Link>
 
-      <button className="nav__toggle" onClick={toggleMenu}>
+      <button className="nav__toggle" onClick={(event) => toggleMenu(event)}>
         <FaBars />
       </button>
 
-      <ul className={`nav__links ${sidebarOpen && 'open'}`}>
+      <ul ref={sidebarRef} className={`nav__links ${sidebarOpen && 'open'}`}>
         <li className="nav__link">
-          <Link to="/">{isAdmin ? 'Products' : 'Home'}</Link>
+          <Link to="/" onClick={() => setSidebarOpen(false)}>
+            {isAdmin ? 'Products' : 'Home'}
+          </Link>
         </li>
 
         {!isAdmin && (
           <li className="nav__link">
-            <Link to="/products">Products</Link>
+            <Link to="/products" onClick={() => setSidebarOpen(false)}>
+              Products
+            </Link>
           </li>
         )}
 
@@ -75,12 +104,18 @@ const Header = () => {
           loggedRouter()
         ) : (
           <li className="nav__link">
-            <Link to="/login">Login | Register</Link>
+            <Link to="/login" onClick={() => setSidebarOpen(false)}>
+              Login | Register
+            </Link>
           </li>
         )}
 
         {!isAdmin && (
-          <Link to="/cart" className="cart cart-small">
+          <Link
+            to="/cart"
+            onClick={() => setSidebarOpen(false)}
+            className="cart cart-small"
+          >
             <FaShoppingCart className="cart__icon" />
             <span className="cart__value">{cart.length}</span>
           </Link>
