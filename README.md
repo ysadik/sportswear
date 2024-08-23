@@ -2,18 +2,16 @@
 
 > Ecommerce website built with the MERN stack with React Context API for state management, pure CSS for styling.
 
-## Demo: https://sportswear.cyclic.app/
+## Setup .env file
+### see .env.example
 
 ## Install dependencies for server
-
 ### `npm install`
 
 ## Install dependencies for client
-
 ### cd client ---> `npm install`
 
 ## Run the client & server with concurrently
-
 ### `npm run dev`
 
 ### Server runs on http://localhost:5000 and client on http://localhost:3000
